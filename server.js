@@ -474,29 +474,16 @@ app.post('/deleteProfilePicture',multipartMiddleware, (request, response) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-app.get('/getAllUsernames', (req, res) => {
-  var usernameArray = [];
+app.get('/getAllUsers', (req, res) => {
+  console.log(req.query.myUserId)
+  const myUserId = req.query.myUserId
   collection = database.collection(appCollection);
-   collection.find({}).toArray(function(err, result) {
+   collection.find({ _id: { $nin: [ObjectId(myUserId)] } }).toArray(function(err, result) {
     if (err) throw err;
     console.log(result);
-    result.map((username =>{
-      console.log(username.userObject?.userName)
-      username.userObject?.userName !== undefined ?  usernameArray.push(username.userObject?.userName) : '';
-    }))
       res.status(200).send({
-            usernameList: usernameArray
+            allUsers: result
           })
-   // database.close();
   });
 
 })
@@ -513,7 +500,8 @@ app.post('/checkIfUserExists', (req, res) => {
   var userEmailForDatabase = req.body.email;
   var userObject = {
     'email': req.body.email,
-    'isRegistered': false
+    'isRegistered': false,
+    'followers': []
   }
   collection = database.collection(appCollection);
   collection.find({ email: { $in: [userEmailForDatabase] } }).toArray(function (err, response) {
@@ -524,7 +512,6 @@ app.post('/checkIfUserExists', (req, res) => {
           })
 
     } else {
-
       console.log('This user DOES NOT exist. Adding...')
       collection.insertOne(userObject, function (error, response) {
         if (error) {
@@ -532,14 +519,13 @@ app.post('/checkIfUserExists', (req, res) => {
            return false;
         } 
         var responseObject = {
-          userId: response?.insertedId,
+          _id: response?.insertedId,
           email: userObject?.email,
-          isRegistered: userObject?.isRegistered
-
+          isRegistered: userObject?.isRegistered,
+          followers: userObject.followers
         }
         res.status(200).send({
           response: responseObject    
-
         })
       })
     
