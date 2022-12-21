@@ -53,13 +53,7 @@ app.get("/aws/files", awsController.listFiles);
 app.get("/aws/files/:fileName", awsController.getFileSignedRequest);
 app.delete("/aws/files/:fileName", awsController.deleteFile);
 
-// const cloudinary = require("cloudinary").v2;
-//   // Cloudinary configuration
-// cloudinary.config({
-//   cloud_name: "podmilt",
-//   api_key: "454468872518962",
-//   api_secret: "5w5-0SURPqrxkPjnb_9FsrRLGnE",
-// });
+
 
 // io.on('connection', (socket) => {
 //   socket.on('join', (data)=>{
