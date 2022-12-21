@@ -387,75 +387,46 @@ app.get("/getChatData", (request, res) => {
     });
 });
 
-app.post("/uploadProfilePicture", multipartMiddleware, (request, response) => {
-  collection = database.collection(appCollection);
+// app.post("/uploadProfilePicture", multipartMiddleware, (request, response) => {
+//   collection = database.collection(appCollection);
 
-  cloudinary.uploader
-    .upload(request.files.image.path, {
-      format: "png",
-      public_id: request.body.public_id,
-    })
-    .then((result) => {
-      collection
-        .updateOne(
-          { _id: ObjectId(result.public_id) },
-          {
-            $set: {
-              "userObject.userProfileImg": result.secure_url,
-            },
-          }
-        )
-        .then((result) => {}),
-        response.status(200).send({
-          message: "success",
-          result,
-        });
-    })
-    .catch((error) => {
-      response.status(500).send({
-        message: "failure",
-        error,
-      });
-    });
-});
-
-app.post("/deleteProfilePicture", multipartMiddleware, (request, response) => {
-  console.log("trying to delete picture...");
-  collection = database.collection(appCollection);
-
-  var public_id_for_deletion = request.body.userPublicId;
-  cloudinary.uploader
-    .destroy(public_id_for_deletion, { invalidate: true })
-    .then((result) => {
-      collection
-        .updateOne(
-          { _id: ObjectId(public_id_for_deletion) },
-          {
-            $set: {
-              "userObject.userProfileImg": "assets/placeholderProfilePic.png",
-            },
-          }
-        )
-        .then((result) => {}),
-        response.status(200).send({
-          message: "success",
-          result,
-        });
-    })
-    .catch((error) => {
-      response.status(500).send({
-        message: "failure",
-        error,
-      });
-    });
-});
+//   cloudinary.uploader
+//     .upload(request.files.image.path, {
+//       format: "png",
+//       public_id: request.body.public_id,
+//     })
+//     .then((result) => {
+//       collection
+//         .updateOne(
+//           { _id: ObjectId(result.public_id) },
+//           {
+//             $set: {
+//               "userObject.userProfileImg": result.secure_url,
+//             },
+//           }
+//         )
+//         .then((result) => {}),
+//         response.status(200).send({
+//           message: "success",
+//           result,
+//         });
+//     })
+//     .catch((error) => {
+//       response.status(500).send({
+//         message: "failure",
+//         error,
+//       });
+//     });
+// });
 
 app.get("/getAllUsers", (req, res) => {
   console.log(req.query.myUserId);
   const myUserId = req.query.myUserId;
   collection = database.collection(appCollection);
   collection
-    .find({ _id: { $nin: [ObjectId(myUserId)] } })
+    // remove my user from the returned list.
+    // .find({ _id: { $nin: [ObjectId(myUserId)] } })
+    .find({})
     .toArray(function (err, result) {
       if (err) throw err;
       console.log(result);
@@ -467,83 +438,83 @@ app.get("/getAllUsers", (req, res) => {
 
 io.on("connection", (socket) => {
   // send a message to the client
-    console.log("I connected")
-    
-    socket.on("followUser", (myData, userData) => {
-      socket.broadcast.emit('hi');
-      console.log(userData)
-      const roomId = userData._id;
-      socket.join(roomId)
-      console.log('Room', roomId)
+  console.log("I connected");
 
-      console.log("myData..", myData);
-      console.log("following..", userData);
-      collection = database.collection(appCollection);
-      collection
-        .updateOne(
-          { _id: ObjectId(userData._id) },
-          {
-            $push: { followers: myData },
-          }
-        )
-        .then(() => {
-          collection
-            .updateOne(
-              { _id: ObjectId(myData._id) },
-              {
-                $push: { following: userData },
-              }
-            )
-            .then((result) => {
-              collection
-                .find({ _id: ObjectId(myData._id) })
-                .toArray(function (err, response) {
-                  console.log("Follow user Response", response[0]);
-                  //io.emit('followUser',response[0])
-                 //io.emit('followUser',response[0]);
-                  socket.emit("followUser", response[0]);
-                  
-                });
-            });
-        });
-    });
+  socket.on("followUser", (myData, userData) => {
+    socket.broadcast.emit("hi");
+    console.log(userData);
+    const roomId = userData._id;
+    socket.join(roomId);
+    console.log("Room", roomId);
 
-    socket.on("unFollowUser", (myData, userData) => {
-      socket.broadcast.emit('bye');
-      const roomId = userData._id;
-      socket.join(roomId)
-      console.log('Room', roomId)
+    console.log("myData..", myData);
+    console.log("following..", userData);
+    collection = database.collection(appCollection);
+    collection
+      .updateOne(
+        { _id: ObjectId(userData._id) },
+        {
+          $push: { followers: myData },
+        }
+      )
+      .then(() => {
+        collection
+          .updateOne(
+            { _id: ObjectId(myData._id) },
+            {
+              $push: { following: userData },
+            }
+          )
+          .then((result) => {
+            collection
+              .find({ _id: ObjectId(myData._id) })
+              .toArray(function (err, response) {
+                console.log("Follow user Response", response[0]);
+                //io.emit('followUser',response[0])
+                //io.emit('followUser',response[0]);
+                socket.emit("followUser", response[0]);
+              });
+          });
+      });
+  });
 
-      console.log("myData..", myData);
-      console.log("Unfollowing..", userData);
-      collection = database.collection(appCollection);
-      collection
-        .updateOne(
-          { _id: ObjectId(userData._id) },
-          {
-            $pull: { followers: { _id: myData._id } },
-          }
-        )
-        .then(() => {
-          collection
-            .updateOne(
-              { _id: ObjectId(myData._id) },
-              {
-                $pull: { following: { _id: userData._id } },
-              }
-            )
-            .then((result) => {
-              collection
-                .find({ _id: ObjectId(myData._id) })
-                .toArray(function (err, response) {
-                  console.log("unFollowUser Response", response[0]);
-                  // io.emit('unFollowUser',response[0])
-                  //io.emit('unFollowUser',response[0]);
-                  socket.emit("unFollowUser", response[0]);
-                });
-            });
-        });
-    });
+  socket.on("unFollowUser", (myData, userData) => {
+    console.log("hi");
+    socket.broadcast.emit("bye");
+    const roomId = userData._id;
+    socket.join(roomId);
+    console.log("Room", roomId);
+
+    console.log("myData..", myData);
+    console.log("Unfollowing..", userData);
+    collection = database.collection(appCollection);
+    collection
+      .updateOne(
+        { _id: ObjectId(userData._id) },
+        {
+          $pull: { followers: { _id: myData._id } },
+        }
+      )
+      .then(() => {
+        collection
+          .updateOne(
+            { _id: ObjectId(myData._id) },
+            {
+              $pull: { following: { _id: userData._id } },
+            }
+          )
+          .then((result) => {
+            collection
+              .find({ _id: ObjectId(myData._id) })
+              .toArray(function (err, response) {
+                console.log("unFollowUser Response", response[0]);
+                // io.emit('unFollowUser',response[0])
+                //io.emit('unFollowUser',response[0]);
+                socket.emit("unFollowUser", response[0]);
+              });
+          });
+      });
+  });
   //    socket.on('disconnect', () => {
   //   console.log('user disconnected');
   // });
@@ -557,6 +528,7 @@ app.post("/checkIfUserExists", (req, res) => {
     isRegistered: false,
     followers: [],
     following: [],
+    username: "",
   };
   collection = database.collection(appCollection);
   collection
@@ -579,6 +551,7 @@ app.post("/checkIfUserExists", (req, res) => {
             isRegistered: userObject?.isRegistered,
             followers: userObject.followers,
             following: userObject.following,
+            username: userObject.username,
           };
           res.status(200).send({
             response: responseObject,
@@ -586,6 +559,25 @@ app.post("/checkIfUserExists", (req, res) => {
         });
       }
     });
+});
+
+app.post("/updateProfile", (req, res) => {
+  console.log("determining user...", req.body.email);
+  const userEmailForDatabase = req.body.email;
+  const updatedUsername = req.body.username;
+
+  collection = database.collection(appCollection);
+  collection.findOneAndUpdate(
+    { email: { $eq: userEmailForDatabase } },
+    { $set: { isRegistered: true, username: updatedUsername  } },
+    { returnDocument: 'after', upsert: true },
+    function(err, result) {
+      if (err) throw err;
+      console.log(result.value);
+      res.status(200).send(
+         result.value.isRegistered);
+    }
+  );
 });
 
 app.use(express.static("public"));
