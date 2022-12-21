@@ -44,7 +44,6 @@ const io = require("socket.io")(httpServer, {
 // app.use(cors({origin:true,credentials: true}));
 
 if ("production" === "development") {
-  console.log("tesing..");
   app.use(logger("dev"));
   app.use(errorhandler());
 }
