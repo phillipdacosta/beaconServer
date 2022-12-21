@@ -3,6 +3,7 @@
 // server.js
 const appCollection = "no_context_users";
 const cors = require("cors");
+
 const express = require("express");
 require("dotenv").config();
 const http = require("http");
@@ -35,7 +36,6 @@ const httpServer = require("http").createServer(app);
 
 const io = require("socket.io")(httpServer, {
   cors: { origin: "*" },
-  methods: ["GET", "POST"]
 });
 
 
