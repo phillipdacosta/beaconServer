@@ -35,7 +35,9 @@ const httpServer = require("http").createServer(app);
 
 const io = require("socket.io")(httpServer, {
   cors: { origin: "*" },
+  methods: ["GET", "POST"]
 });
+
 
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
