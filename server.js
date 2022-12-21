@@ -562,7 +562,7 @@ app.post("/checkIfUserExists", (req, res) => {
 });
 
 app.post("/updateProfile", (req, res) => {
-  console.log("determining user...", req.body.email);
+  console.log("determining user..", req.body.email);
   const userEmailForDatabase = req.body.email;
   const updatedUsername = req.body.username;
 
