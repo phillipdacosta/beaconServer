@@ -445,33 +445,59 @@ io.on("connection", (socket) => {
     console.log("myData..", myData);
     console.log("following..", userData);
     collection = database.collection(appCollection);
-    collection
-      .updateOne(
-        { _id: ObjectId(userData._id) },
-        {
-          $push: { followers: myData },
+    const matchingIds = [ObjectId(myData._id), ObjectId(userData._id)];
+    const updates = [
+      {
+        updateOne: {
+          filter: { _id: ObjectId(myData._id) },
+          update: { $push: { following: userData } }
         }
-      )
-      .then(() => {
-        collection
-          .updateOne(
-            { _id: ObjectId(myData._id) },
-            {
-              $push: { following: userData },
-            }
-          )
-          .then((result) => {
-            collection
-              .find({ _id: ObjectId(myData._id) })
-              .toArray(function (err, response) {
-                console.log("Follow user Response", response[0]);
-                //io.emit('followUser',response[0])
-                //io.emit('followUser',response[0]);
-                io.emit("followUser", response[0]);
-              });
-          });
-      });
-  });
+      },
+      {
+        updateOne: {
+          filter: { _id:  ObjectId(userData._id)},
+          update: {$push: { followers: myData } }
+        }
+      }
+    ];
+    collection.bulkWrite(updates).then(()=>{
+      collection.find({ _id: { $in: matchingIds } }).toArray().then(updatedUsers => {
+        console.log('updatedUsers', updatedUsers)
+        io.emit("followUser", updatedUsers);
+      })
+    })
+    }); 
+ 
+
+    // here
+    // collection
+    //   .updateOne(
+    //     { _id: ObjectId(userData._id) },
+    //     {
+    //       $push: { followers: myData },
+    //     }
+    //   )
+    //   .then(() => {
+    //     collection
+    //       .updateOne(
+    //         { _id: ObjectId(myData._id) },
+    //         {
+    //           $push: { following: userData },
+    //         }
+    //       )
+    //       .then((result) => {
+    //         collection
+    //           .find({ _id: ObjectId(myData._id,) })
+    //          // .toArray(function (err, response) {
+    //             console.log("Follow user Response", response[0]);
+    //             //io.emit('followUser',response[0])
+    //             //io.emit('followUser',response[0]);
+    //             io.emit("followUser", response[0]);
+             // });
+          //});
+     // });
+
+  // to here
 
   socket.on("unFollowUser", (myData, userData) => {
     console.log("hi");
@@ -510,10 +536,11 @@ io.on("connection", (socket) => {
           });
       });
   });
+});
   //    socket.on('disconnect', () => {
   //   console.log('user disconnected');
   // });
-});
+//});
 
 app.post("/checkIfUserExists", (req, res) => {
   console.log("determining user...", req.body.email);
