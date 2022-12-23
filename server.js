@@ -467,7 +467,7 @@ io.on("connection", (socket) => {
                 console.log("Follow user Response", response[0]);
                 //io.emit('followUser',response[0])
                 //io.emit('followUser',response[0]);
-                socket.emit("followUser", response[0]);
+                io.emit("followUser", response[0]);
               });
           });
       });
@@ -505,7 +505,7 @@ io.on("connection", (socket) => {
                 console.log("unFollowUser Response", response[0]);
                 // io.emit('unFollowUser',response[0])
                 //io.emit('unFollowUser',response[0]);
-                socket.emit("unFollowUser", response[0]);
+                io.emit("unFollowUser", response[0]);
               });
           });
       });
