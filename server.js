@@ -414,6 +414,19 @@ app.get("/getChatData", (request, res) => {
 //     });
 // });
 
+
+app.get("/getMyData", (req, res) => {
+  console.log(req.query.email);
+  const userEmailForDatabase = req.query.email;
+  collection = database.collection(appCollection);
+  collection.findOne({ email: userEmailForDatabase }, function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    res.status(200).send(result);
+  });
+  
+});
+
 app.get("/getAllUsers", (req, res) => {
   console.log(req.query.myUserId);
   const myUserId = req.query.myUserId;
