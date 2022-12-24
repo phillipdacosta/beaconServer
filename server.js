@@ -38,7 +38,6 @@ const io = require("socket.io")(httpServer, {
   cors: { origin: "*" },
 });
 
-
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
 // app.use(cors({origin:true,credentials: true}));
@@ -52,8 +51,6 @@ app.get("/aws/sign", awsController.signedRequest);
 app.get("/aws/files", awsController.listFiles);
 app.get("/aws/files/:fileName", awsController.getFileSignedRequest);
 app.delete("/aws/files/:fileName", awsController.deleteFile);
-
-
 
 // io.on('connection', (socket) => {
 //   socket.on('join', (data)=>{
@@ -414,17 +411,15 @@ app.get("/getChatData", (request, res) => {
 //     });
 // });
 
-
 app.get("/getMyData", (req, res) => {
   console.log(req.query.email);
   const userEmailForDatabase = req.query.email;
   collection = database.collection(appCollection);
-  collection.findOne({ email: userEmailForDatabase }, function(err, result) {
+  collection.findOne({ email: userEmailForDatabase }, function (err, result) {
     if (err) throw err;
     console.log(result);
     res.status(200).send(result);
   });
-  
 });
 
 app.get("/getAllUsers", (req, res) => {
@@ -448,67 +443,35 @@ io.on("connection", (socket) => {
   // send a message to the client
   console.log("I connected");
 
-  socket.on("followUser", (myData, userData) => {
-    socket.broadcast.emit("hi");
-    console.log(userData);
-    const roomId = userData._id;
-    socket.join(roomId);
-    console.log("Room", roomId);
 
-    console.log("myData..", myData);
-    console.log("following..", userData);
-    collection = database.collection(appCollection);
-    const matchingIds = [ObjectId(myData._id), ObjectId(userData._id)];
-    const updates = [
-      {
-        updateOne: {
-          filter: { _id: ObjectId(myData._id) },
-          update: { $push: { following: userData } }
-        }
-      },
-      {
-        updateOne: {
-          filter: { _id:  ObjectId(userData._id)},
-          update: {$push: { followers: myData } }
-        }
-      }
-    ];
-    collection.bulkWrite(updates).then(()=>{
-      collection.find({ _id: { $in: matchingIds } }).toArray().then(updatedUsers => {
-        console.log('updatedUsers', updatedUsers)
-        io.emit("followUser", updatedUsers);
-      })
-    })
-    }); 
- 
 
-    // here
-    // collection
-    //   .updateOne(
-    //     { _id: ObjectId(userData._id) },
-    //     {
-    //       $push: { followers: myData },
-    //     }
-    //   )
-    //   .then(() => {
-    //     collection
-    //       .updateOne(
-    //         { _id: ObjectId(myData._id) },
-    //         {
-    //           $push: { following: userData },
-    //         }
-    //       )
-    //       .then((result) => {
-    //         collection
-    //           .find({ _id: ObjectId(myData._id,) })
-    //          // .toArray(function (err, response) {
-    //             console.log("Follow user Response", response[0]);
-    //             //io.emit('followUser',response[0])
-    //             //io.emit('followUser',response[0]);
-    //             io.emit("followUser", response[0]);
-             // });
-          //});
-     // });
+  // here
+  // collection
+  //   .updateOne(
+  //     { _id: ObjectId(userData._id) },
+  //     {
+  //       $push: { followers: myData },
+  //     }
+  //   )
+  //   .then(() => {
+  //     collection
+  //       .updateOne(
+  //         { _id: ObjectId(myData._id) },
+  //         {
+  //           $push: { following: userData },
+  //         }
+  //       )
+  //       .then((result) => {
+  //         collection
+  //           .find({ _id: ObjectId(myData._id,) })
+  //          // .toArray(function (err, response) {
+  //             console.log("Follow user Response", response[0]);
+  //             //io.emit('followUser',response[0])
+  //             //io.emit('followUser',response[0]);
+  //             io.emit("followUser", response[0]);
+  // });
+  //});
+  // });
 
   // to here
 
@@ -550,9 +513,9 @@ io.on("connection", (socket) => {
       });
   });
 });
-  //    socket.on('disconnect', () => {
-  //   console.log('user disconnected');
-  // });
+//    socket.on('disconnect', () => {
+//   console.log('user disconnected');
+// });
 //});
 
 app.post("/checkIfUserExists", (req, res) => {
@@ -604,16 +567,90 @@ app.post("/updateProfile", (req, res) => {
   collection = database.collection(appCollection);
   collection.findOneAndUpdate(
     { email: { $eq: userEmailForDatabase } },
-    { $set: { isRegistered: true, username: updatedUsername  } },
-    { returnDocument: 'after', upsert: true },
-    function(err, result) {
+    { $set: { isRegistered: true, username: updatedUsername } },
+    { returnDocument: "after", upsert: true },
+    function (err, result) {
       if (err) throw err;
-      console.log(result.value);
-      res.status(200).send(
-         result.value.isRegistered);
+      res.status(200).send(result.value.isRegistered);
     }
   );
 });
+
+app.post("/followUser", (req, res) => {
+  console.log("determining user to follow..", req.body);
+
+  const { myData, userToFollow } = req.body;
+  collection = database.collection(appCollection);
+  const matchingIds = [ObjectId(myData._id), ObjectId(userToFollow._id)];
+  const updates = [
+    {
+      updateOne: {
+        filter: { _id: ObjectId(myData._id) },
+        update: { $push: { following: userToFollow } },
+      },
+    },
+    {
+      updateOne: {
+        filter: { _id: ObjectId(userToFollow._id) },
+        update: { $push: { followers: myData } },
+      },
+    },
+  ];
+  collection.bulkWrite(updates).then((result) => {
+    if (result.modifiedCount === 2) {
+      collection
+        .find({ _id: { $in: matchingIds } })
+        .toArray()
+        .then((updatedUsers) => {
+          res.status(200).send(updatedUsers);
+        });
+    } else {
+      res.status(500).send({ error: "Could not follow user" });
+    }
+  });
+});
+
+app.post("/unfollowUser", async (req, res) => {
+  console.log("determining user to unfollow..", req.body);
+
+  const { myData, userToUnFollow } = req.body;
+  collection = database.collection(appCollection);
+  const matchingIds = [ObjectId(myData._id), ObjectId(userToUnFollow._id)];
+  console.log(matchingIds)
+  try {
+
+    // Update the following and followers arrays for both users
+    const result = await collection.bulkWrite([
+      {
+        updateOne: {
+          filter: { _id: ObjectId(myData._id) },
+          update: { $pull: { following: { _id: userToUnFollow._id } } },
+        },
+      },
+      {
+        updateOne: {
+          filter: { _id: ObjectId(userToUnFollow._id) },
+          update: { $pull: { followers: { _id: myData._id } } },
+        },
+      },
+    ]);
+    // Check that both updates were successful
+    if (result.modifiedCount === 2) {
+      // Find the updated documents
+      const updatedUsers = await collection.find({ _id: { $in: matchingIds } }).toArray();
+      res.status(200).send(updatedUsers);
+    } else {
+      res.status(500).send({ error: "Could not unfollow user" });
+    }
+  } catch (error) {
+    // Log any errors that occurred during the bulkWrite operation
+    console.error(error);
+    res.status(500).send({ error: "Could not unfollow user" });
+  }
+});
+
+
+
 
 app.use(express.static("public"));
 
