@@ -411,8 +411,8 @@ app.get("/getChatData", (request, res) => {
 //     });
 // });
 
-app.get("/getMyData", (req, res) => {
-  console.log(req.query.email);
+app.get("/getMyDataFromDB", (req, res) => {
+  console.log('Get my data',req.query.email);
   const userEmailForDatabase = req.query.email;
   collection = database.collection(appCollection);
   collection.findOne({ email: userEmailForDatabase }, function (err, result) {
