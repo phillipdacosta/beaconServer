@@ -417,7 +417,7 @@ app.get("/getMyDataFromDB", (req, res) => {
   collection = database.collection(appCollection);
   collection.findOne({ email: userEmailForDatabase }, function (err, result) {
     if (err) throw err;
-   
+   console.log(result)
     res.status(200).send(result);
   });
 });
