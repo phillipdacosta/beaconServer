@@ -662,7 +662,7 @@ httpServer.listen(
   () => {
     const DATABASE_NAME = "no_context";
     const CONNECTION_URL = `mongodb+srv://phillipdacosta:database12@cluster0-8s0vf.mongodb.net/${DATABASE_NAME}?retryWrites=true&w=majority`;
-
+    console.log("connected")
     MongoClient.connect(
       CONNECTION_URL,
       { useNewUrlParser: true },
