@@ -54,21 +54,21 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 
 // io.on('connection', (socket) => {
 //   socket.on('join', (data)=>{
-//    console.log("JOINDATA- ",data)
+//   
 
 //     socket.join(data.room);
 //     var roomy = data.room;
 //     var emailJoinedRoom = data.email
-//     console.log(`${emailJoinedRoom} joined ${roomy}`)
-//   //  console.log(email, "joined")
+//    
+//   // 
 //     socket.to(roomy).emit(`${emailJoinedRoom} user joined`);
 //     if(data.room === roomy){
-//       console.log("else ran")
+//      
 //       collection = database.collection("travelbugdata");
 //       collection.find({ 'email' : emailJoinedRoom}).toArray(function (err, response) {
-//         console.log("PHILR", response)
+//        
 //         if(response[0]?.userObject?.notifications?.length > 0){
-//           console.log("else ran2..")
+//          
 //           collection = database.collection("travelbugdata");
 
 //           collection.updateOne({ 'email' : emailJoinedRoom},
@@ -96,16 +96,16 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //     if(roomy !== 'notificationsRoom' && roomy !== 'app' && roomy != 'forumDetailRoom'){
 
 //     collection.find({ 'topics.uuid' :roomy}).toArray(function (err, response) {
-//       console.log(response)
+//      
 //       response[0].topics?.map((topics)=>{
 //         if(topics.uuid === roomy){
-//           console.log("right room..")
+//          
 //           if(topics?.seenByUsers?.includes(emailJoinedRoom)){
-//             console.log("User already seen topic..")
+//            
 
 //           } else {
 //             collection = database.collection("cityForum");
-//             console.log("User HAS NOT seen topic..adding", emailJoinedRoom, "to" , roomy)
+//            
 //             collection.updateOne({'topics.uuid' : roomy}, {
 //               '$push':
 //               {
@@ -122,7 +122,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //     })
 //   }
 //   });
-//   console.log('a user connected',);
+//  
 
 //   socket.on('message', (data) => {
 //     const messageObject = data;
@@ -136,8 +136,8 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //       const uuid = data.uuid
 //       const profilePic = data.profilePic
 //       const taggedUsers = data.taggedUsers
-//     console.log("UUID, ",chatroom)
-//    // console.log("Incoming",data)
+//    
+//    //
 //     // io.to(chatroom).emit('message', `${chatUserName} said ${message.message}`)
 //      io.to(data.chatroom).to('notificationsRoom').to('app').to('forumDetailRoom').emit("message", messageObject);
 
@@ -152,7 +152,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 
 //     })
 //     collection = database.collection("travelbugdata");
-//     console.log("TAGGED USERS ARRAY", data.taggedUsers)
+//    
 
 //     var usrTag = {
 //       'chatroom' : chatroom,
@@ -163,7 +163,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //     collection.find()
 //     data.taggedUsers.map((taggedusers)=>{
 //  //    collection.find({ 'email' : taggedusers.userEmail}).toArray(function (err, response) {
-//    console.log("THE TAGGED MFS", taggedusers)
+//   
 
 //        collection.updateOne({ 'email' : taggedusers.userEmail}, {
 //          '$push':
@@ -179,14 +179,14 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //   });
 
 //   socket.on('like', (likeData) =>{
-//     console.log("likeData",likeData)
+//    
 //     const isPull = likeData.isPull;
 //     const chat_room = likeData.chatRoom
-//     console.log(likeData['comment-uuid'])
+//    
 //     collection = database.collection("cityForum");
 //     if(isPull){
 //       delete likeData.isPull;
-//       console.log('pulling...')
+//      
 //       var message_objects = []
 
 //       collection.updateOne({'city': (likeData.city), "country": likeData.country, 'topics.messageObject.uuid' : likeData['comment-uuid']},
@@ -202,7 +202,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //           response[0].topics.map((likeDataObject=>{
 //             if(likeDataObject.uuid === chat_room){
 //               message_objects.push(likeDataObject.messageObject)
-//               console.log("message_objects", message_objects)
+//              
 //               io.emit("like", message_objects);
 //               likeData.likedBy = []
 //               message_objects = []
@@ -212,7 +212,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //         })
 //       })
 //     } else {
-//       console.log('pushing...')
+//      
 //       var message_objects = []
 //       delete likeData.isPull;
 //       collection.updateOne({'city': (likeData.city), "country": likeData.country, 'topics.messageObject.uuid' : likeData['comment-uuid']},
@@ -228,7 +228,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //           response[0].topics.map((likeDataObject=>{
 //             if(likeDataObject.uuid === chat_room){
 //               message_objects.push(likeDataObject.messageObject)
-//               console.log("message_objects", message_objects)
+//              
 //               io.emit("like", message_objects);
 //               likeData.likedBy = []
 //               message_objects = []
@@ -242,14 +242,14 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //   })
 
 //   socket.on('likeTopic', (likeTopicData) =>{
-//     console.log("likeTopicData",likeTopicData)
+//    
 //     const isPull = likeTopicData.isPull;
 //     const chat_room = likeTopicData.chatRoom
-//     console.log("Liking Topic in", chat_room)
+//    
 //     collection = database.collection("cityForum");
 //     if(isPull){
 //       delete likeTopicData.isPull;
-//       console.log('pulling...')
+//      
 //       var likeTopic_objects = []
 
 //       collection.updateOne({'city': (likeTopicData.city), "country": likeTopicData.country, 'topics.uuid' : likeTopicData['topic-uuid']},
@@ -263,7 +263,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //           response[0].topics.map((likeDataObject=>{
 //             if(likeDataObject.uuid === chat_room){
 //               likeTopic_objects.push(likeDataObject)
-//               console.log("like_objects", likeTopic_objects)
+//              
 //               io.emit("likeTopic", likeTopic_objects);
 //               likeTopicData.likedBy = []
 //               likeTopic_objects = []
@@ -273,7 +273,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //         })
 //       })
 //     } else {
-//       console.log('pushing...')
+//      
 //       var likeTopic_objects = []
 //       delete likeTopicData.isPull;
 //       collection.updateOne({'city': (likeTopicData.city), "country": likeTopicData.country, 'topics.uuid' : likeTopicData['topic-uuid']},
@@ -287,7 +287,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //           response[0].topics.map((likeDataObject=>{
 //             if(likeDataObject.uuid === chat_room){
 //               likeTopic_objects.push(likeDataObject)
-//               console.log("like_objects", likeTopic_objects)
+//              
 //               io.emit("likeTopic", likeTopic_objects);
 //               likeTopicData.likedBy = []
 //               likeTopic_objects = []
@@ -302,8 +302,8 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 
 //   socket.on('saveTopic', data =>{
 
-//     console.log("Saving new topic", data)
-//     console.log(data)
+//    
+//    
 //     const city = data.city;
 //     const country = data.country;
 //     const topic = data.topic;
@@ -327,7 +327,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //     collection = database.collection("cityForum");
 
 //     collection.find({ 'city': (city), "country": country }).toArray(function (err, response) {
-//       console.log("forum response1",response)
+//      
 //       collection = database.collection("cityForum");
 //       collection.updateOne({'city': (city), "country": country}, {
 //               '$push':
@@ -336,9 +336,9 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //               }
 
 //             }).then(result =>{
-//               console.log(result)
+//              
 //               collection.find({ 'city': (city), "country": country }).toArray(function (err, response) {
-//                 console.log("updated response", response)
+//                
 //                 io.emit('saveTopic', response)
 
 //               })
@@ -348,8 +348,8 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //   })
 
 //   socket.on('leaveRoom', data => {
-//     console.log('a user left disconnected!');
-//     console.log("Leaving",data)
+//    
+//    
 //     //socket.leave([data]);
 //     //socket.removeAllListeners('join');
 
@@ -358,7 +358,7 @@ app.delete("/aws/files/:fileName", awsController.deleteFile);
 //   });
 
 //   socket.on('error', function () {
-//     console.log("Client: error");
+//    
 //     socket.socket.reconnect();
 // });
 // });
@@ -371,7 +371,7 @@ app.get("/getChatData", (request, res) => {
   collection
     .find({ city: city, country: country })
     .toArray(function (err, response) {
-      console.log("forum response", response);
+     
 
       res.status(200).send({
         result: response,
@@ -412,18 +412,18 @@ app.get("/getChatData", (request, res) => {
 // });
 
 app.get("/getMyDataFromDB", (req, res) => {
-  console.log('Get my data',req.query.email);
+ 
   const userEmailForDatabase = req.query.email;
   collection = database.collection(appCollection);
   collection.findOne({ email: userEmailForDatabase }, function (err, result) {
     if (err) throw err;
-    console.log(result);
+   
     res.status(200).send(result);
   });
 });
 
 app.get("/getAllUsers", (req, res) => {
-  console.log(req.query.myUserId);
+ 
   const myUserId = req.query.myUserId;
   collection = database.collection(appCollection);
   collection
@@ -432,7 +432,7 @@ app.get("/getAllUsers", (req, res) => {
     .find({})
     .toArray(function (err, result) {
       if (err) throw err;
-      console.log('',result);
+     
       res.status(200).send(
        result,
       );
@@ -441,7 +441,7 @@ app.get("/getAllUsers", (req, res) => {
 
 io.on("connection", (socket) => {
   // send a message to the client
-  console.log("I connected");
+ 
 
 
 
@@ -465,7 +465,7 @@ io.on("connection", (socket) => {
   //         collection
   //           .find({ _id: ObjectId(myData._id,) })
   //          // .toArray(function (err, response) {
-  //             console.log("Follow user Response", response[0]);
+  //            
   //             //io.emit('followUser',response[0])
   //             //io.emit('followUser',response[0]);
   //             io.emit("followUser", response[0]);
@@ -476,14 +476,14 @@ io.on("connection", (socket) => {
   // to here
 
   socket.on("unFollowUser", (myData, userData) => {
-    console.log("hi");
+   
     socket.broadcast.emit("bye");
     const roomId = userData._id;
     socket.join(roomId);
-    console.log("Room", roomId);
+   
 
-    console.log("myData..", myData);
-    console.log("Unfollowing..", userData);
+   
+   
     collection = database.collection(appCollection);
     collection
       .updateOne(
@@ -504,7 +504,7 @@ io.on("connection", (socket) => {
             collection
               .find({ _id: ObjectId(myData._id) })
               .toArray(function (err, response) {
-                console.log("unFollowUser Response", response[0]);
+               
                 // io.emit('unFollowUser',response[0])
                 //io.emit('unFollowUser',response[0]);
                 io.emit("unFollowUser", response[0]);
@@ -514,12 +514,12 @@ io.on("connection", (socket) => {
   });
 });
 //    socket.on('disconnect', () => {
-//   console.log('user disconnected');
+//  
 // });
 //});
 
 app.post("/checkIfUserExists", (req, res) => {
-  console.log("determining user...", req.body.email);
+ 
   var userEmailForDatabase = req.body.email;
   var userObject = {
     email: req.body.email,
@@ -537,10 +537,10 @@ app.post("/checkIfUserExists", (req, res) => {
           response: response[0],
         });
       } else {
-        console.log("This user DOES NOT exist. Adding...");
+       
         collection.insertOne(userObject, function (error, response) {
           if (error) {
-            console.log("Error occurred while inserting");
+           
             return false;
           }
           var responseObject = {
@@ -560,7 +560,7 @@ app.post("/checkIfUserExists", (req, res) => {
 });
 
 app.post("/updateProfile", (req, res) => {
-  console.log("determining user..", req.body.email);
+ 
   const userEmailForDatabase = req.body.email;
   const updatedUsername = req.body.username;
 
@@ -577,7 +577,7 @@ app.post("/updateProfile", (req, res) => {
 });
 
 app.post("/followUser", (req, res) => {
-  console.log("determining user to follow..", req.body);
+ 
 
   const { myData, userToFollow } = req.body;
   collection = database.collection(appCollection);
@@ -611,12 +611,12 @@ app.post("/followUser", (req, res) => {
 });
 
 app.post("/unfollowUser", async (req, res) => {
-  console.log("determining user to unfollow..", req.body);
+ 
 
   const { myData, userToUnFollow } = req.body;
   collection = database.collection(appCollection);
   const matchingIds = [ObjectId(myData._id), ObjectId(userToUnFollow._id)];
-  console.log(matchingIds)
+ 
   try {
 
     // Update the following and followers arrays for both users
@@ -673,7 +673,7 @@ httpServer.listen(
         database = client.db(DATABASE_NAME);
         collection = database.collection(DATABASE_NAME);
 
-        console.log("Connected to `" + DATABASE_NAME + "`!");
+       
       }
     );
   }
