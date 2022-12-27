@@ -9,7 +9,9 @@ const s3 = new aws.S3({
 });
 
 exports.signedRequest = function (req, res) {
+
     const fileName = req.query['file-name'];
+    console.log(fileName)
     const fileType = req.query['file-type'];
     const s3Params = {
         Bucket: secrets.aws_bucket,
