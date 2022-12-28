@@ -576,11 +576,16 @@ app.post("/updateProfile", (req, res) => {
   );
 });
 
-app.post("/followUser", (req, res) => {
+app.post("/followUser", async (req, res) => {
  
 
-  const { myData, userToFollow } = req.body;
+  const { myData, userToFollow, followText } = req.body;
+  console.log('BANG', req.body)
   collection = database.collection(appCollection);
+
+   if(followText === 'Follow'){
+
+   
   const matchingIds = [ObjectId(myData._id), ObjectId(userToFollow._id)];
   const updates = [
     {
@@ -608,14 +613,8 @@ app.post("/followUser", (req, res) => {
       res.status(500).send({ error: "Could not follow user" });
     }
   });
-});
-
-app.post("/unfollowUser", async (req, res) => {
- 
-
-  const { myData, userToUnFollow } = req.body;
-  collection = database.collection(appCollection);
-  const matchingIds = [ObjectId(myData._id), ObjectId(userToUnFollow._id)];
+} else {
+  const matchingIds = [ObjectId(myData._id), ObjectId(userToFollow._id)];
  
   try {
 
@@ -624,12 +623,12 @@ app.post("/unfollowUser", async (req, res) => {
       {
         updateOne: {
           filter: { _id: ObjectId(myData._id) },
-          update: { $pull: { following: { _id: userToUnFollow._id } } },
+          update: { $pull: { following: { _id: userToFollow._id } } },
         },
       },
       {
         updateOne: {
-          filter: { _id: ObjectId(userToUnFollow._id) },
+          filter: { _id: ObjectId(userToFollow._id) },
           update: { $pull: { followers: { _id: myData._id } } },
         },
       },
@@ -647,7 +646,47 @@ app.post("/unfollowUser", async (req, res) => {
     console.error(error);
     res.status(500).send({ error: "Could not unfollow user" });
   }
+}
 });
+
+// app.post("/unfollowUser", async (req, res) => {
+ 
+
+//   const { myData, userToUnFollow } = req.body;
+//   collection = database.collection(appCollection);
+//   const matchingIds = [ObjectId(myData._id), ObjectId(userToUnFollow._id)];
+ 
+//   try {
+
+//     // Update the following and followers arrays for both users
+//     const result = await collection.bulkWrite([
+//       {
+//         updateOne: {
+//           filter: { _id: ObjectId(myData._id) },
+//           update: { $pull: { following: { _id: userToUnFollow._id } } },
+//         },
+//       },
+//       {
+//         updateOne: {
+//           filter: { _id: ObjectId(userToUnFollow._id) },
+//           update: { $pull: { followers: { _id: myData._id } } },
+//         },
+//       },
+//     ]);
+//     // Check that both updates were successful
+//     if (result.modifiedCount === 2) {
+//       // Find the updated documents
+//       const updatedUsers = await collection.find({ _id: { $in: matchingIds } }).toArray();
+//       res.status(200).send(updatedUsers);
+//     } else {
+//       res.status(500).send({ error: "Could not unfollow user" });
+//     }
+//   } catch (error) {
+//     // Log any errors that occurred during the bulkWrite operation
+//     console.error(error);
+//     res.status(500).send({ error: "Could not unfollow user" });
+//   }
+// });
 
 
 
